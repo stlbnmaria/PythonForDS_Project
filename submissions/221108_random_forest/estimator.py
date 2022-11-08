@@ -17,24 +17,38 @@ def _encode_dates(X):
     X.loc[:, "hour"] = X["date"].dt.hour
 
     # add seasons
-    seasons = {1: "winter", 2: "winter", 3: "spring", 4: "spring", 
-               5: "spring", 6: "summer", 7: "summer", 8: "summer", 
-               9: "autumn", 10: "autumn", 11: "autumn", 12: "winter"}
+    seasons = {
+        1: "winter",
+        2: "winter",
+        3: "spring",
+        4: "spring",
+        5: "spring",
+        6: "summer",
+        7: "summer",
+        8: "summer",
+        9: "autumn",
+        10: "autumn",
+        11: "autumn",
+        12: "winter",
+    }
     X.loc[:, "season"] = X["date"].dt.month.map(seasons)
 
     public_holidays = []
     school_holidays = {}
     for year in X["date"].dt.year.unique():
         public_holidays.extend(JoursFeries.for_year(year).values())
-        school_holidays.update(SchoolHolidayDates().holidays_for_year_and_zone(year, 'C'))
-    
+        school_holidays.update(
+            SchoolHolidayDates().holidays_for_year_and_zone(year, "C")
+        )
+
     # add public holidays
     X.loc[:, "public_holiday"] = X["date"].isin(public_holidays)
 
-    # add school holidays
-    school_holidays_bool = [k for k,v in school_holidays.items() if v['vacances_zone_c']]
+    # add school holidays
+    school_holidays_bool = [
+        k for k, v in school_holidays.items() if v["vacances_zone_c"]
+    ]
     X.loc[:, "school_holiday"] = X["date"].isin(school_holidays_bool)
-
 
     # Finally we can drop the original columns from the dataframe
     return X.drop(columns=["date"])
