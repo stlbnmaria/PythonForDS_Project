@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import FunctionTransformer, OneHotEncoder
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import make_pipeline
-from sklearn.linear_model import Ridge
 
 from vacances_scolaires_france import SchoolHolidayDates
 from jours_feries_france import JoursFeries
@@ -85,7 +85,7 @@ def get_estimator():
             ("cat", categorical_encoder, categorical_cols),
         ]
     )
-    regressor = Ridge()
+    regressor = RandomForestRegressor(max_features="sqrt", max_samples=0.5, n_jobs=4)
 
     pipe = make_pipeline(
         FunctionTransformer(_merge_external_data, validate=False),
