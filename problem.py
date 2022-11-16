@@ -117,7 +117,7 @@ def _additional_date_variables(X, drop_date: bool = True, holiday_names=False):
         return X
 
 
-def merge_external_data(X, imputed_data=True):
+def _merge_external_data(X, imputed_data=True):
     if imputed_data:
         f_name = "weather_data_imp.csv"
     else:
