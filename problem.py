@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import rampwf as rw
 from sklearn.model_selection import TimeSeriesSplit
+import matplotlib.pyplot as plt
 
 problem_title = "Bike count prediction"
 _target_column_name = "log_bike_count"
@@ -134,3 +135,36 @@ def _merge_external_data(X, imputed_data=True):
     X = X.sort_values("orig_index")
     del X["orig_index"]
     return X
+
+
+def week_plot(X_test, predicted_X_test, y_test, test_performed: str):
+    mask = (
+        (X_test["counter_name"] == "Totem 73 boulevard de Sébastopol S-N")
+        & (X_test["date"] > pd.to_datetime("2021/09/01"))
+        & (X_test["date"] < pd.to_datetime("2021/09/08"))
+    )
+
+    df_viz = X_test.loc[mask].copy()
+    df_viz["bike_count"] = np.exp(y_test[mask.values]) - 1
+    df_viz["bike_count (predicted)"] = np.exp(predicted_X_test[mask.values]) - 1
+
+    fig, ax = plt.subplots(figsize=(12, 4))
+
+    df_viz.plot(x="date", y="bike_count", ax=ax)
+    df_viz.plot(x="date", y="bike_count (predicted)", ax=ax, ls="--")
+    ax.set_title(f"Predictions for {test_performed}")
+    ax.set_ylabel("bike_count")
+    plt.show()
+
+
+def error_plot(predicted_X_test, y_test, test_performed: str):
+    fig, ax = plt.subplots()
+
+    df_viz = pd.DataFrame(
+        {"True y values": y_test, "Predicted y values": predicted_X_test}
+    ).sample(10000, random_state=0)
+
+    df_viz.plot.scatter(
+        x="True y values", y="Predicted y values", s=8, alpha=0.1, ax=ax
+    )
+    ax.set_title(f"Error scatter plot for {test_performed}")
