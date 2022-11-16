@@ -154,17 +154,14 @@ def week_plot(X_test, predicted_X_test, y_test, test_performed: str):
     df_viz.plot(x="date", y="bike_count (predicted)", ax=ax, ls="--")
     ax.set_title(f"Predictions for {test_performed}")
     ax.set_ylabel("bike_count")
-    plt.show()
 
 
 def error_plot(predicted_X_test, y_test, test_performed: str):
-    fig, ax = plt.subplots()
-
     df_viz = pd.DataFrame(
         {"True y values": y_test, "Predicted y values": predicted_X_test}
     ).sample(10000, random_state=0)
 
-    df_viz.plot.scatter(
-        x="True y values", y="Predicted y values", s=8, alpha=0.1, ax=ax
+    plt.scatter(
+        x=df_viz["True y values"], y=df_viz["Predicted y values"], s=8, alpha=0.1
     )
-    ax.set_title(f"Error scatter plot for {test_performed}")
+    plt.title(f"Error scatter plot for {test_performed}")
