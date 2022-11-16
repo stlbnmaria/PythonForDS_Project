@@ -47,16 +47,8 @@ def get_test_data(path="."):
     f_name = "test.parquet"
     return _read_data(path, f_name)
 
-def read_weather_data(path=".", imputed_data=True):
-    if imputed_data:
-        f_name = "weather_data_imp.csv"
-    else:
-        f_name = "weather_data.csv"
-    weather_data = pd.read_csv(os.path.join(path, "data", f_name), parse_dates=["date"], dtype={"wdir": "category"})
-    return weather_data
 
-
-def _encode_dates(X, last_step: bool=True):
+def _encode_dates(X, drop_date: bool = True):
     X = X.copy()  # modify a copy of X
     # Encode the date information from the DateOfDeparture columns
     X.loc[:, "year"] = X["date"].dt.year
@@ -65,62 +57,79 @@ def _encode_dates(X, last_step: bool=True):
     X.loc[:, "weekday"] = X["date"].dt.weekday
     X.loc[:, "hour"] = X["date"].dt.hour
 
-    if last_step:
+    if drop_date:
         # Finally we can drop the original columns from the dataframe
         return X.drop(columns=["date"])
     else:
         return X
 
-def _additional_date_variables(X, last_step: bool=True, holiday_names=False):
+
+def _additional_date_variables(X, drop_date: bool = True, holiday_names=False):
     X = X.copy()  # modify a copy of X
 
     # add seasons
-    seasons = {1: "winter", 2: "winter", 3: "spring", 4: "spring",
-               5: "spring", 6: "summer", 7: "summer", 8: "summer",
-               9: "autumn", 10: "autumn", 11: "autumn", 12: "winter"}
+    seasons = {
+        1: "winter",
+        2: "winter",
+        3: "spring",
+        4: "spring",
+        5: "spring",
+        6: "summer",
+        7: "summer",
+        8: "summer",
+        9: "autumn",
+        10: "autumn",
+        11: "autumn",
+        12: "winter",
+    }
     X.loc[:, "season"] = X["date"].dt.month.map(seasons)
 
     public_holidays = []
     school_holidays = {}
     for year in X["date"].dt.year.unique():
         public_holidays.extend(JoursFeries.for_year(year).values())
-        school_holidays.update(SchoolHolidayDates().holidays_for_year_and_zone(year, 'C'))
+        school_holidays.update(
+            SchoolHolidayDates().holidays_for_year_and_zone(year, "C")
+        )
 
     # add public holidays
     X.loc[:, "public_holiday"] = X["date"].isin(public_holidays)
 
     if holiday_names:
-        # add school holidays names
-        school_holidays_name = {k: re.sub("\s+|'", '_',
-                                        re.sub('[éë]', 'e', v['nom_vacances'].lower()))
-                                for k, v in school_holidays.items() if v['vacances_zone_c']}
+        # add school holidays names
+        school_holidays_name = {
+            k: re.sub("\s+|'", "_", re.sub("[éë]", "e", v["nom_vacances"].lower()))
+            for k, v in school_holidays.items()
+            if v["vacances_zone_c"]
+        }
         X.loc[:, "school_holiday_name"] = X["date"].map(school_holidays_name)
-
     else:
-        # add school holidays
-        school_holidays_bool = [k for k,v in school_holidays.items() if v['vacances_zone_c']]
+        # add school holidays
+        school_holidays_bool = [
+            k for k, v in school_holidays.items() if v["vacances_zone_c"]
+        ]
         X.loc[:, "school_holiday"] = X["date"].isin(school_holidays_bool)
 
-    if last_step:
+    if drop_date:
         # Finally we can drop the original columns from the dataframe
         return X.drop(columns=["date"])
     else:
         return X
 
+
 def merge_external_data(X, imputed_data=True):
     if imputed_data:
-        file_path = Path(__file__).parent / "data" / "weather_data_imp.csv"
+        f_name = "weather_data_imp.csv"
     else:
-        file_path = Path(__file__).parent / "data" / "weather_data.csv"
-    df_ext = pd.read_csv(file_path, parse_dates=["date"])
+        f_name = "weather_data.csv"
 
+    file_path = Path(__file__).parent / "data" / f_name
+    df_ext = pd.read_csv(file_path, parse_dates=["date"])
 
     X = X.copy()
     # When using merge_asof left frame need to be sorted
     X["orig_index"] = np.arange(X.shape[0])
-    X = pd.merge_asof(
-        X.sort_values("date"), df_ext.sort_values("date"), on="date"
-    )
+    X = pd.merge_asof(X.sort_values("date"), df_ext.sort_values("date"), on="date")
     # Sort back to the original order
     X = X.sort_values("orig_index")
     del X["orig_index"]
