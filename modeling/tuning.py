@@ -14,8 +14,8 @@ sys.path.insert(0, "../..")
 import problem
 
 
-def tuning_estimator(estimator, grid, path, filename: str):
-
+def tuning_estimator(estimator, grid, path, filename: str, n_jobs: int = 1):
+    # get timestamp for file name in the end
     timestamp = datetime.today().strftime("%Y%m%d_%H%M")
 
     # date variables specifications
@@ -30,20 +30,20 @@ def tuning_estimator(estimator, grid, path, filename: str):
     )
     add_date_cols = ["season"]
 
-    # categorical variables in X specifications
-    categorical_encoder = OneHotEncoder(handle_unknown="ignore")
-    categorical_cols = ["counter_name", "site_name", "wdir"]
-
+    # transformer to drop certain columns of the dataframe
     drop_cols = [
         "counter_id",
         "site_id",
         "counter_installation_date",
         "counter_technical_id",
     ]
-
     drop_transformer = FunctionTransformer(
         problem._drop_cols, kw_args={"cols": drop_cols}, validate=False
     )
+
+    # categorical variables in X specifications
+    categorical_encoder = OneHotEncoder(handle_unknown="ignore")
+    categorical_cols = ["counter_name", "site_name", "wdir"]
 
     # create column transformer with all one hot encoders
     preprocessor = ColumnTransformer(
@@ -70,15 +70,15 @@ def tuning_estimator(estimator, grid, path, filename: str):
     # get cv time series split
     cv = problem.get_cv(X_train, y_train)
 
-    alphas_tested = np.linspace(0.01, 1, num=100)
-
+    # performing grid search on pipe
     clf = GridSearchCV(
         pipe,
         grid,
         cv=cv,
         scoring="neg_root_mean_squared_error",
         return_train_score=True,
-        verbose=10,
+        n_jobs=n_jobs,
+        verbose=3,
     )
     clf.fit(X_train, y_train)
 
