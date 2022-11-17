@@ -137,6 +137,10 @@ def _merge_external_data(X, imputed_data=True):
     return X
 
 
+def _drop_cols(X, cols):
+    return X.drop(columns=cols)
+
+
 def week_plot(X_test, predicted_X_test, y_test, test_performed: str):
     mask = (
         (X_test["counter_name"] == "Totem 73 boulevard de Sébastopol S-N")
