@@ -1,6 +1,9 @@
 import sys
+import os
 
+from datetime import datetime
 from joblib import dump
+import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
@@ -11,7 +14,10 @@ sys.path.insert(0, "../..")
 import problem
 
 
-def main():
+def main(path="./results_tuning"):
+    path = "./results_tuning"
+    timestamp = datetime.today().strftime("%Y%m%d_%H%M")
+
     # date variables specifications
     date_encoder = FunctionTransformer(
         problem._encode_dates, kw_args={"drop_date": False}
@@ -56,10 +62,10 @@ def main():
 
     # define grid for parameter tuning
     grid = {
-        "randomforestregressor__n_estimators": [200, 300],
-        "randomforestregressor__max_samples": [0.5, 0.6, 0.7],
-        "randomforestregressor__max_depth": [10, 20, 40],
-        "randomforestregressor__max_features": ["sqrt", "log2"],
+        "randomforestregressor__n_estimators": [200, 400],
+        "randomforestregressor__max_samples": [0.4, 0.6, 0.8],
+        "randomforestregressor__max_depth": [20, 40, 60, 80],
+        "randomforestregressor__max_features": ["sqrt", 0.2],
     }
 
     # perform grid search
@@ -70,15 +76,21 @@ def main():
         scoring="neg_root_mean_squared_error",
         return_train_score=True,
         n_jobs=4,
-        verbose=1,
+        verbose=10,
     )
-    search = clf.fit(X_train, y_train)
+    clf.fit(X_train, y_train)
+
+    # saving cv_results
+    results = pd.DataFrame(clf.cv_results_)
+    results.to_csv(
+        os.path.join(path, f"{timestamp}_tuning_RF_cv_results.csv"), index=False
+    )
 
     # saving the best model
-    dump(search, "tuning_RF_grid_search.pkl")
-
-    # saving the full pipeline
-    dump(search.best_estimator_, "tuning_RF_best_estimator.pkl")
+    dump(
+        clf.best_estimator_,
+        os.path.join(path, f"{timestamp}_tuning_RF_best_estimator.pkl"),
+    )
 
 
 if __name__ == "__main__":
