@@ -78,7 +78,7 @@ def tuning_estimator(estimator, grid, path, filename: str, n_jobs: int = 1):
         scoring="neg_root_mean_squared_error",
         return_train_score=True,
         n_jobs=n_jobs,
-        verbose=3,
+        verbose=10,
     )
     clf.fit(X_train, y_train)
 
