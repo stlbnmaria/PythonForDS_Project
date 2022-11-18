@@ -8,10 +8,10 @@ from tuning import tuning_estimator
 if __name__ == "__main__":
     estimator = RandomForestRegressor()
     grid = {
-        "randomforestregressor__n_estimators": [200, 400],
-        "randomforestregressor__max_samples": [0.4, 0.6, 0.8],
-        "randomforestregressor__max_depth": [20, 40, 60, 80],
-        "randomforestregressor__max_features": ["sqrt", 0.2],
+        "randomforestregressor__n_estimators": [300],
+        "randomforestregressor__max_samples": [0.4, 0.5, 0.6],
+        "randomforestregressor__max_depth": [30, 40],
+        "randomforestregressor__max_features": ["sqrt", 0.15, 0.25],
     }
     path = "./results_tuning"
     filename = "tuning_RF"
