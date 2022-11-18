@@ -3,10 +3,9 @@ import os
 import sys
 import numpy as np
 from sklearn.compose import ColumnTransformer
-from sklearn.linear_model import Ridge
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import FunctionTransformer, OneHotEncoder
+from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
 import pandas as pd
 from datetime import datetime
 
@@ -30,28 +29,19 @@ def tuning_estimator(estimator, grid, path, filename: str, n_jobs: int = 1):
     )
     add_date_cols = ["season"]
 
-    # transformer to drop certain columns of the dataframe
-    drop_cols = [
-        "counter_id",
-        "site_id",
-        "counter_installation_date",
-        "counter_technical_id",
-    ]
-    drop_transformer = FunctionTransformer(
-        problem._drop_cols, kw_args={"cols": drop_cols}, validate=False
-    )
+    # numerical variables in X
+    num_cols = ["temp", "dwpt", "rhum", "prcp", "wspd", "pres"]
 
-    # categorical variables in X specifications
-    categorical_encoder = OneHotEncoder(handle_unknown="ignore")
+    # categorical variables in X
     categorical_cols = ["counter_name", "site_name", "wdir"]
 
     # create column transformer with all one hot encoders
     preprocessor = ColumnTransformer(
         [
             ("date", OneHotEncoder(handle_unknown="ignore"), date_cols + add_date_cols),
-            ("cat", categorical_encoder, categorical_cols),
+            ("num", StandardScaler(), num_cols),
+            ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
         ],
-        remainder="passthrough",
     )
 
     # create pipe incl. merging weather data
@@ -59,7 +49,6 @@ def tuning_estimator(estimator, grid, path, filename: str, n_jobs: int = 1):
         FunctionTransformer(problem._merge_external_data, validate=False),
         date_encoder,
         add_date_encoder,
-        drop_transformer,
         preprocessor,
         estimator,
     )
