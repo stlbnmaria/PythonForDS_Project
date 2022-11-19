@@ -8,7 +8,7 @@ from tuning import tuning_estimator
 
 if __name__ == "__main__":
     estimator = Ridge()
-    alphas_tested = np.arange(0.01, 1, step=0.01)
+    alphas_tested = np.arange(0.7, 1, step=0.005)
     grid = {"ridge__alpha": alphas_tested}
     path = "./results_tuning"
     filename = "tuning_ridge"
