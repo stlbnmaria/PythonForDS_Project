@@ -21,7 +21,7 @@ def tuning_estimator(estimator, grid, path, filename: str, n_jobs: int = 1):
     date_encoder = FunctionTransformer(
         problem._encode_dates, kw_args={"drop_date": False}
     )
-    date_cols = ["year", "month", "day", "weekday", "hour"]
+    date_cols = ["year", "month", "weekday", "hour"]
 
     # additional data variables specifications
     add_date_encoder = FunctionTransformer(
@@ -33,7 +33,7 @@ def tuning_estimator(estimator, grid, path, filename: str, n_jobs: int = 1):
     num_cols = ["temp", "dwpt", "rhum", "prcp", "wspd", "pres"]
 
     # categorical variables in X
-    categorical_cols = ["counter_name", "site_name", "wdir"]
+    categorical_cols = ["counter_name", "wdir"]
 
     # create column transformer with all one hot encoders
     preprocessor = ColumnTransformer(
