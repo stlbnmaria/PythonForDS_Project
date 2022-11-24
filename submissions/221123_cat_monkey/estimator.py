@@ -10,6 +10,31 @@ from sklearn.pipeline import make_pipeline
 from vacances_scolaires_france import SchoolHolidayDates
 from jours_feries_france import JoursFeries
 
+categorical_feat = ["year", "month", "weekday", "hour", "season", "counter_name", "wdir"]
+
+num_cols = ["temp", "dwpt", "rhum", "prcp", "wspd", "pres"]
+
+
+from sklearn.pipeline import Pipeline
+
+if not hasattr(Pipeline, "_original_fit"):
+    # Here, we replace the `fit` method with a monkey patch (a modification of it at runtime)
+    # This allows modifying the behavior of `fit` (here we inject the categorical features
+    # information) while respecting the API contract used by RAMP.
+
+    # Store the previous implementation of `fit` in a private method.
+    Pipeline._original_fit = Pipeline.fit
+
+    # Define the new behavior for `fit`
+    def monkey_patch_for_fit(self, X, y, *args):
+        # Injecting the information of categorical before calling the original fit method.
+        # categorical_feat is not passed as a parameter but should be in the closure
+        # of the method.
+        return self._original_fit(X, y, catboostregressor__cat_features=categorical_feat)
+
+    # Patch the `fit` method at runtime.
+    Pipeline.fit = monkey_patch_for_fit
+
 
 def _encode_dates(X):
     X = X.copy()  # modify a copy of X
@@ -75,30 +100,7 @@ def _merge_external_data(X):
 def get_estimator():
     date_encoder = FunctionTransformer(_encode_dates)
 
-    categorical_feat = ["year", "month", "weekday", "hour", "season", "counter_name", "wdir"]
-
-    num_cols = ["temp", "dwpt", "rhum", "prcp", "wspd", "pres"]
-
     regressor = CatBoostRegressor(iterations=50)
-
-    from sklearn.pipeline import Pipeline
-
-    # Here, we replace the `fit` method with a monkey patch (a modification of it at runtime)
-    # This allows modifying the behavior of `fit` (here we inject the categorical features
-    # information) while respecting the API contract used by RAMP. 
-
-    # Store the previous implementation of `fit` in a private method.
-    Pipeline._original_fit = Pipeline.fit
-
-    # Define the new behavior for `fit`
-    def monkey_patch_for_fit(self, X, y, *args):
-    # Injecting the information of categorical before calling the original fit method.
-    # categorical_feat is not passed as a parameter but should be in the closure
-    # of the method.
-        return self._original_fit(X, y, catboostregressor__cat_features=categorical_feat)
-
-    # Patch the `fit` method at runtime.
-    Pipeline.fit = monkey_patch_for_fit
 
     pipe = make_pipeline(
         FunctionTransformer(_merge_external_data, validate=False),
