@@ -10,7 +10,15 @@ from sklearn.pipeline import make_pipeline
 from vacances_scolaires_france import SchoolHolidayDates
 from jours_feries_france import JoursFeries
 
-categorical_feat = ["year", "month", "weekday", "hour", "season", "counter_name", "wdir"]
+categorical_feat = [
+    "year",
+    "month",
+    "weekday",
+    "hour",
+    "season",
+    "counter_name",
+    "wdir",
+]
 
 num_cols = ["temp", "dwpt", "rhum", "prcp", "wspd", "pres"]
 
@@ -30,7 +38,9 @@ if not hasattr(Pipeline, "_original_fit"):
         # Injecting the information of categorical before calling the original fit method.
         # categorical_feat is not passed as a parameter but should be in the closure
         # of the method.
-        return self._original_fit(X, y, catboostregressor__cat_features=categorical_feat)
+        return self._original_fit(
+            X, y, catboostregressor__cat_features=categorical_feat
+        )
 
     # Patch the `fit` method at runtime.
     Pipeline.fit = monkey_patch_for_fit
@@ -100,7 +110,7 @@ def _merge_external_data(X):
 def get_estimator():
     date_encoder = FunctionTransformer(_encode_dates)
 
-    regressor = CatBoostRegressor(iterations=50)
+    regressor = CatBoostRegressor()
 
     pipe = make_pipeline(
         FunctionTransformer(_merge_external_data, validate=False),

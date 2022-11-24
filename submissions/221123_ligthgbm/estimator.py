@@ -88,7 +88,15 @@ def get_estimator():
         ],
     )
 
-    regressor = LGBMRegressor(subsample=.6, n_estimators=300, min_child_weight=.1, max_depth=8, learning_rate=.1, colsample_bytree=.5, colsample_bynode=.6,)
+    regressor = LGBMRegressor(
+        subsample=0.6,
+        n_estimators=300,
+        min_child_weight=0.1,
+        max_depth=8,
+        learning_rate=0.1,
+        colsample_bytree=0.5,
+        colsample_bynode=0.6,
+    )
 
     pipe = make_pipeline(
         FunctionTransformer(_merge_external_data, validate=False),
