@@ -88,7 +88,7 @@ def get_estimator():
         ],
     )
 
-    regressor = ExtraTreesRegressor(n_estimators=50, max_samples=.9, bootstrap=True, max_depth=15, max_features=.2)
+    regressor = ExtraTreesRegressor(n_estimators=10, max_samples=0.8, bootstrap=True, max_depth=40, max_features=0.5)
 
     pipe = make_pipeline(
         FunctionTransformer(_merge_external_data, validate=False),
