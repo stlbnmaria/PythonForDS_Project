@@ -81,37 +81,30 @@ def get_estimator():
 
     regressor = CatBoostRegressor(iterations=50)
 
-    pipe = make_pipeline(
-        FunctionTransformer(_merge_external_data, validate=False),
-        date_encoder,
-        FunctionTransformer(lambda x: x[num_cols + categorical_feat]),
-        regressor,
-    )
-
-
     from sklearn.pipeline import Pipeline
 
     # Here, we replace the `fit` method with a monkey patch (a modification of it at runtime)
     # This allows modifying the behavior of `fit` (here we inject the categorical features
-    # information) while respecting the API contract used by RAMP.    
+    # information) while respecting the API contract used by RAMP. 
 
-    Pipeline._default_fit_changed = 0
+    # Store the previous implementation of `fit` in a private method.
+    Pipeline._original_fit = Pipeline.fit
 
     # Define the new behavior for `fit`
     def monkey_patch_for_fit(self, X, y, *args):
     # Injecting the information of categorical before calling the original fit method.
     # categorical_feat is not passed as a parameter but should be in the closure
     # of the method.
-        fit_params={"catboostregressor__cat_features":categorical_feat}
-        return self._original_fit(X, y, **fit_params)
+        return self._original_fit(X, y, catboostregressor__cat_features=categorical_feat)
 
-    if Pipeline._default_fit_changed == 0:
-        # Store the previous implementation of `fit` in a private method.
-        Pipeline._original_fit = Pipeline.fit
+    # Patch the `fit` method at runtime.
+    Pipeline.fit = monkey_patch_for_fit
 
-        # Patch the `fit` method at runtime.
-        Pipeline.fit = monkey_patch_for_fit
-
-        Pipeline._default_fit_changed = 1
+    pipe = make_pipeline(
+        FunctionTransformer(_merge_external_data, validate=False),
+        date_encoder,
+        FunctionTransformer(lambda x: x[num_cols + categorical_feat]),
+        regressor,
+    )
 
     return pipe
