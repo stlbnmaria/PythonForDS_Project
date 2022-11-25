@@ -3,3 +3,4 @@ __pycache__
 .ipynb_checkpoints
 data
 modeling/tree_models/results_tuning/20221118_2031_tuning_RF_best_estimator.pkl
+catboost_info
