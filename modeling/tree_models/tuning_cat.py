@@ -30,7 +30,15 @@ def tuning_estimator(estimator, grid, path, filename: str, n_jobs: int = 1):
     num_cols = ["temp", "dwpt", "rhum", "prcp", "wspd", "pres"]
 
     # categorical variables in X
-    categorical_cols = ["year", "month", "weekday", "hour", "counter_name", "wdir", "season"]
+    categorical_cols = [
+        "year",
+        "month",
+        "weekday",
+        "hour",
+        "counter_name",
+        "wdir",
+        "season",
+    ]
 
     # create pipe incl. merging weather data
     pipe = make_pipeline(
