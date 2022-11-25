@@ -70,7 +70,7 @@ if __name__ == "__main__":
     estimator = CatBoostRegressor()
 
     grid = {
-        "catboostregressor__iterations": [800, 1000, 1200, 1400],
+        "catboostregressor__iterations": [300],
         "catboostregressor__subsample": [0.6, 0.7, 0.8, 0.9, 1],
         "catboostregressor__sampling_frequency": ["PerTree", "PerTreeLevel"],
         "catboostregressor__depth": [6, 7, 8, 9, 10],
@@ -79,4 +79,4 @@ if __name__ == "__main__":
 
     path = "./results_tuning"
     filename = "tuning_cat"
-    tuning_estimator(estimator, grid, path, filename, n_jobs=8)
+    tuning_estimator(estimator, grid, path, filename, n_jobs=6)
