@@ -48,6 +48,12 @@ def get_test_data(path="."):
     f_name = "test.parquet"
     return _read_data(path, f_name)
 
+def get_covid_data(X_col):
+    first_lockdown = pd.date_range(start="2020-10-30", end="2020-12-15")
+    second_lockdown = pd.date_range(start="2021-03-20", end="2021-06-09")
+    combined = first_lockdown.union(second_lockdown)
+    return X_col.dt.date.isin(combined.date)
+
 
 def _encode_dates(X, drop_date: bool = True):
     X = X.copy()  # modify a copy of X
@@ -110,6 +116,9 @@ def _additional_date_variables(X, drop_date: bool = True, holiday_names=False):
             k for k, v in school_holidays.items() if v["vacances_zone_c"]
         ]
         X.loc[:, "school_holiday"] = X["date"].isin(school_holidays_bool)
+
+    #get covid lockdown data
+    X.loc[:, "covid_lockdown"] = get_covid_data(X["date"])
 
     if drop_date:
         # Finally we can drop the original columns from the dataframe
