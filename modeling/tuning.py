@@ -30,10 +30,13 @@ def tuning_estimator(estimator, grid, path, filename: str, n_jobs: int = 1):
     add_date_cols = ["season"]
 
     # numerical variables in X
-    num_cols = ["temp", "dwpt", "rhum", "prcp", "wspd", "pres"]
+    num_cols = ["temp", "prcp", "wspd"]
 
     # categorical variables in X
     categorical_cols = ["counter_name", "wdir"]
+
+    # binary variables in X
+    bin_cols = ["public_holiday", "school_holiday", "covid_lockdown"]
 
     # create column transformer with all one hot encoders
     preprocessor = ColumnTransformer(
@@ -41,6 +44,7 @@ def tuning_estimator(estimator, grid, path, filename: str, n_jobs: int = 1):
             ("date", OneHotEncoder(handle_unknown="ignore"), date_cols + add_date_cols),
             ("num", StandardScaler(), num_cols),
             ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
+            ("binary", "passthrough", bin_cols),
         ],
     )
 
