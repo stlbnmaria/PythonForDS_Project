@@ -20,4 +20,4 @@ if __name__ == "__main__":
 
     path = "./results_tuning"
     filename = "tuning_xgb_v2data"
-    tuning_estimator(estimator, grid, path, filename, n_jobs=4)
+    tuning_estimator(estimator, grid, path, filename, n_jobs=-1)
