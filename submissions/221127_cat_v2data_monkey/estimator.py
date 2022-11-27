@@ -12,7 +12,15 @@ from jours_feries_france import JoursFeries
 
 
 num_cols = ["temp", "prcp", "wspd", "latitude", "longitude"]
-categorical_cols = ["counter_name", "wdir", "year", "month", "weekday", "hour", "season"]
+categorical_cols = [
+    "counter_name",
+    "wdir",
+    "year",
+    "month",
+    "weekday",
+    "hour",
+    "season",
+]
 bin_cols = ["public_holiday", "school_holiday", "covid_lockdown"]
 
 
@@ -37,7 +45,6 @@ if not hasattr(Pipeline, "_original_fit"):
 
     # Patch the `fit` method at runtime.
     Pipeline.fit = monkey_patch_for_fit
-
 
 
 def get_covid_data(X_col):
@@ -90,7 +97,7 @@ def _encode_dates(X):
     ]
     X.loc[:, "school_holiday"] = X["date"].isin(school_holidays_bool)
 
-    #get covid lockdown data
+    # get covid lockdown data
     X.loc[:, "covid_lockdown"] = get_covid_data(X["date"])
 
     # Finally we can drop the original columns from the dataframe
@@ -115,7 +122,12 @@ def get_estimator():
     date_encoder = FunctionTransformer(_encode_dates)
 
     regressor = CatBoostRegressor(
-        depth=11, iterations=1200, rsm=0.05, sampling_frequency="PerTree", subsample=0.6, verbose=0
+        depth=11,
+        iterations=1200,
+        rsm=0.05,
+        sampling_frequency="PerTree",
+        subsample=0.6,
+        verbose=0,
     )
 
     pipe = make_pipeline(

@@ -61,7 +61,7 @@ def _encode_dates(X):
     ]
     X.loc[:, "school_holiday"] = X["date"].isin(school_holidays_bool)
 
-    #get covid lockdown data
+    # get covid lockdown data
     X.loc[:, "covid_lockdown"] = get_covid_data(X["date"])
 
     # Finally we can drop the original columns from the dataframe
@@ -100,7 +100,13 @@ def get_estimator():
     )
 
     regressor = XGBRegressor(
-        colsample_bylevel=0.6, colsample_bynode=0.5, colsample_bytree=0.7, learning_rate=0.1, max_depth=10, n_estimators=300, subsample=0.8,
+        colsample_bylevel=0.6,
+        colsample_bynode=0.5,
+        colsample_bytree=0.7,
+        learning_rate=0.1,
+        max_depth=10,
+        n_estimators=300,
+        subsample=0.8,
     )
 
     pipe = make_pipeline(

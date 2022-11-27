@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
-from catboost import CatBoostRegressor
+from lightgbm import LGBMRegressor
 from sklearn.pipeline import make_pipeline
 
 from vacances_scolaires_france import SchoolHolidayDates
@@ -86,7 +86,7 @@ def get_estimator():
     date_encoder = FunctionTransformer(_encode_dates)
 
     date_cols = ["year", "month", "weekday", "hour", "season"]
-    num_cols = ["temp", "prcp", "wspd"]
+    num_cols = ["temp", "prcp", "wspd", "latitude", "longitude"]
     categorical_cols = ["counter_name", "wdir"]
     bin_cols = ["public_holiday", "school_holiday", "covid_lockdown"]
 
@@ -99,12 +99,14 @@ def get_estimator():
         ],
     )
 
-    regressor = CatBoostRegressor(
-        depth=10,
-        iterations=1000,
-        rsm=0.25,
-        sampling_frequency="PerTree",
+    regressor = LGBMRegressor(
+        colsample_bytree=0.4,
+        learning_rate=0.1,
+        min_child_samples=20,
+        n_estimators=1000,
+        num_leaves=30,
         subsample=0.7,
+        subsample_freq=1,
     )
 
     pipe = make_pipeline(

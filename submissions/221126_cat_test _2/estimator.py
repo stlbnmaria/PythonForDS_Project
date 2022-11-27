@@ -61,7 +61,7 @@ def _encode_dates(X):
     ]
     X.loc[:, "school_holiday"] = X["date"].isin(school_holidays_bool)
 
-    #get covid lockdown data
+    # get covid lockdown data
     X.loc[:, "covid_lockdown"] = get_covid_data(X["date"])
 
     # Finally we can drop the original columns from the dataframe
@@ -100,7 +100,11 @@ def get_estimator():
     )
 
     regressor = CatBoostRegressor(
-        depth=10, iterations=1000, rsm=0.25, sampling_frequency="PerTree", subsample=0.7,
+        depth=10,
+        iterations=1000,
+        rsm=0.25,
+        sampling_frequency="PerTree",
+        subsample=0.7,
     )
 
     pipe = make_pipeline(

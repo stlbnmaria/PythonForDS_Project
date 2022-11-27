@@ -86,7 +86,7 @@ def get_estimator():
     date_encoder = FunctionTransformer(_encode_dates)
 
     date_cols = ["year", "month", "weekday", "hour", "season"]
-    num_cols = ["temp", "prcp", "wspd"]
+    num_cols = ["temp", "prcp", "wspd", "latitude", "longitude"]
     categorical_cols = ["counter_name", "wdir"]
     bin_cols = ["public_holiday", "school_holiday", "covid_lockdown"]
 
@@ -100,11 +100,12 @@ def get_estimator():
     )
 
     regressor = CatBoostRegressor(
-        depth=10,
-        iterations=1000,
-        rsm=0.25,
+        depth=12,
+        iterations=1200,
+        rsm=0.05,
         sampling_frequency="PerTree",
         subsample=0.7,
+        verbose=0,
     )
 
     pipe = make_pipeline(

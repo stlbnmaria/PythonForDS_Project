@@ -89,7 +89,11 @@ def get_estimator():
     )
 
     regressor = CatBoostRegressor(
-        depth=10, iterations=1200, rsm=0.25, sampling_frequency="PerTree", subsample=0.7,
+        depth=10,
+        iterations=1200,
+        rsm=0.25,
+        sampling_frequency="PerTree",
+        subsample=0.7,
     )
 
     pipe = make_pipeline(
