@@ -19,5 +19,5 @@ if __name__ == "__main__":
     }
 
     path = "./results_tuning"
-    filename = "tuning_lightGBM"
+    filename = "tuning_lightGBM_v2data"
     tuning_estimator(estimator, grid, path, filename, n_jobs=6)
