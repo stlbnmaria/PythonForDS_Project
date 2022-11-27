@@ -30,7 +30,7 @@ def tuning_estimator(estimator, grid, path, filename: str, n_jobs: int = 1):
     add_date_cols = ["season"]
 
     # numerical variables in X
-    num_cols = ["temp", "prcp", "wspd"]
+    num_cols = ["temp", "prcp", "wspd", "latitude", "longitude"]
 
     # categorical variables in X
     categorical_cols = ["counter_name", "wdir"]
