@@ -10,7 +10,7 @@ vacances-scolaires-france==0.9.0
 jours-feries-france==0.7.0
 black==22.10.0
 linear-tree==0.3.5
-xgboost==1.7.1
+xgboost
 catboost==1.1.1
 lcensemble==0.3.2
 lightgbm==3.3.3
