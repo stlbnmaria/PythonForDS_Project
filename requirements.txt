@@ -1,0 +1,13 @@
+pandas
+# Workaround for https://github.com/mwaskom/seaborn/issues/3072
+matplotlib<3.6.1
+seaborn
+pyarrow
+scikit-learn
+folium
+ramp-workflow
+vacances-scolaires-france==0.9.0
+jours-feries-france==0.7.0
+black==22.10.0
+linear-tree==0.3.5
+xgboost==1.7.1
