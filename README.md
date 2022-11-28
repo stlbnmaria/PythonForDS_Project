@@ -1,151 +1,113 @@
-# RAMP starting kit on the bike counters dataset
+# Paris Bike Counters Project
 
-![GH Actions](https://github.com/ramp-kits/bike_counters/actions/workflows/main.yml/badge.svg)
+Date: 28.11.2022
 
-## Getting started
+Contributors: João Melo and Maria Stoelben
 
-### Download the data,
+## Context and description of the project
 
-Download the data files,
- - [train.parquet](https://github.com/ramp-kits/bike_counters/releases/download/v0.1.0/train.parquet)
- - [test.parquet](https://github.com/ramp-kits/bike_counters/releases/download/v0.1.0/test.parquet)
+We are two students of the M.Sc. Data Science for Business at École Polytechnique and HEC Paris. This project was created for a course in our first year. The aim is to predict the bicycle traffic for 30 different bike counters in Paris. The target variable is the number of bikes passing by for every hour. Furthermore, the target variable was transformed by $y'=log(1+y)$ to reduce skewness. Our data analyses can be found in this [folder](data_analyses). The different models, tuning scripts and aggregation can be found [here](modeling). Final submissions for the ramp platform and their encoded names can be found [here](submission).
 
-and put them to into the data folder.
+## Data 
+ -  Bike counters data    
+    - [train.parquet](https://github.com/ramp-kits/bike_counters/releases/download/v0.1.0/train.parquet)
+    - [test.parquet](https://github.com/ramp-kits/bike_counters/releases/download/v0.1.0/test.parquet)
+ - Paris weather data (see detailed description in [dedicated notebook](data_analyses/weather_data_analyses.ipynb))
+ - Public holidays calendar ([jours-feries-france 0.7.0](https://pypi.org/project/jours-feries-france/))
+ - School holidays calendar ([vacances-scolaires-france 0.9.0](https://pypi.org/project/vacances-scolaires-france/))
+ - Covid lockdowns (national lockdowns indicated [here](https://en.wikipedia.org/wiki/COVID-19_pandemic_in_France))
 
-### Install
+## Algorithms 
+We worked with the following algorithms. Tuning was done by using an 8-fold cross validation time series split.
 
-To run a submission and the notebook you will need the dependencies listed
-in `requirements.txt`. You can install the dependencies with the
-following command-line:
+- Linear Models
+    - Ridge
+    - Lasso
+- Geometric Models
+    - KNN
+- Kernel Models 
+    - Linear SVR
+- Tree Models
+    - Random forest
+    - Boosting
+        - XGB
+        - Catboost
+        - LightGBM
+    - Extremely randomized Trees
+    - LCE Ensemble
+- Stacked Generalization
+    - Voting Regressor
 
-```bash
-pip install -U -r requirements.txt
-```
+## Results
 
-It is recommended to create a new virtual environment for this project. For instance, with conda,
-```bash
-conda create -n bikes-ramp python=3.9
-conda activate bikes-ramp
-pip install -r requirements.txt
-```
+Due to readability, we display only the best performing models compared to a baseline in the following graph. All of the final models are tuned and the Voting Regressor is the weighted average of the the Catboost, LightGBM and XGB model.
 
+![Alt text](modeling/scores_comparison.png?raw=true "Title")
 
-### Challenge description
-
-Get started on this RAMP with the
-[dedicated notebook](bike_counters_starting_kit.ipynb).
-
-First install [Jupyter](https://jupyter.org/):
-
-```bash
-pip install jupyter
-```
-
-then launch the notebook using:
-
-```bash
-jupyter notebook ./bike_counters_starting_kit.ipynb
-```
-
-### Test a submission
-
-The submissions need to be located in the `submissions` folder. For instance
-for `my_submission`, it should be located in `submissions/my_submission`.
-
-To run a specific submission, you can use the `ramp-test` command line:
-
-```bash
-ramp-test --submission my_submission
-```
-
-For instance, you can run the provided `starting_kit` submission example with:
-
-```bash
-ramp-test --submission starting_kit
-```
-
-You should get an output similar to the following one:
+Below you can find the output for the tuned Catboost model. It seems to be the best performing algorithm for this project. The model had the lowest RMSE in GridSearchCV compared to all trained models. The mean validation score in GridSearchCV was 0.71. For the ramp-test, the bagged validation score was 0.73 and the bagged test score was 0.54. 
 
 <details>
 
-<summary>Example output</summary>
+<summary>Output of the best model</summary>
 
 ```
 Testing Bike count prediction
 Reading train and test files from ./data/ ...
 Reading cv ...
-Training submissions/starting_kit ...
+Training submissions/221127_cat_v2data_final ...
 CV fold 0
-        score   rmse      time
-        train  0.610  0.084952
-        valid  0.983  0.408040
-        test   0.703  0.033141
+        score   rmse       time
+        train  0.287  13.768831
+        valid  0.866   1.562365
+        test   0.618   0.275989
 CV fold 1
-        score   rmse      time
-        train  0.663  0.106090
-        valid  0.852  0.399937
-        test   0.759  0.032243
+        score   rmse       time
+        train  0.320  17.759133
+        valid  0.721   1.594459
+        test   0.588   0.271921
 CV fold 2
-        score   rmse      time
-        train  0.682  0.170388
-        valid  0.891  0.324898
-        test   0.771  0.025760
+        score   rmse       time
+        train  0.332  19.889750
+        valid  0.639   1.440514
+        test   0.548   0.270202
 CV fold 3
-        score   rmse      time
-        train  0.705  0.208704
-        valid  0.844  0.324345
-        test   0.875  0.024143
+        score   rmse       time
+        train  0.355  23.975242
+        valid  0.558   1.455431
+        test   0.638   0.267357
 CV fold 4
-        score   rmse      time
-        train  0.728  0.233596
-        valid  0.804  0.319224
-        test   0.872  0.024262
+        score   rmse       time
+        train  0.364  30.052660
+        valid  0.687   1.459324
+        test   0.599   0.279093
 CV fold 5
-        score   rmse      time
-        train  0.737  0.280230
-        valid  0.939  0.320182
-        test   0.863  0.024391
+        score   rmse       time
+        train  0.376  33.125565
+        valid  0.707   1.469339
+        test   0.628   0.277371
 CV fold 6
-        score   rmse      time
-        train  0.763  0.327653
-        valid  1.131  0.316819
-        test   0.843  0.025528
+        score   rmse       time
+        train  0.381  43.913053
+        valid  0.862   1.441575
+        test   0.604   0.270822
 CV fold 7
-        score   rmse      time
-        train  0.793  0.376762
-        valid  0.896  0.324821
-        test   0.767  0.024473
+        score   rmse       time
+        train  0.379  35.565420
+        valid  0.704   1.414413
+        test   0.694   0.271785
 ----------------------------
 Mean CV scores
 ----------------------------
-        score             rmse         time
-        train   0.71 +- 0.0546   0.2 +- 0.1
-        valid  0.917 +- 0.0962  0.3 +- 0.04
-        test   0.807 +- 0.0607   0.0 +- 0.0
+        score            rmse         time
+        train  0.349 ± 0.0314  27.3 ± 9.53
+        valid   0.718 ± 0.097   1.5 ± 0.06
+        test   0.615 ± 0.0396    0.3 ± 0.0
 ----------------------------
 Bagged scores
 ----------------------------
         score   rmse
-        valid  0.923
-        test   0.765
-
+        valid  0.725
+        test   0.543
 ```
 
 </details>
-
-You can get more information regarding this command line:
-
-```bash
-ramp-test --help
-```
-
-### To go further
-
-You can find more information regarding `ramp-workflow` in the
-[dedicated documentation](https://paris-saclay-cds.github.io/ramp-docs/ramp-workflow/stable/using_kits.html)
-
-You can find the description of the columns present in the `external_data.csv`
-in `parameter-description-weather-external-data.pdf`. For more information about this
-dataset see the [Meteo France
-website](https://donneespubliques.meteofrance.fr/?fond=produit&id_produit=90&id_rubrique=32)
-(in French).
