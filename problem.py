@@ -128,11 +128,11 @@ def _additional_date_variables(X, drop_date: bool = True, holiday_names=False):
         return X
 
 
-def _merge_external_data(X, imputed_data=True):
-    if imputed_data:
+def _merge_external_data(X, weather_only=True):
+    if weather_only:
         f_name = "weather_data_imp.csv"
     else:
-        f_name = "weather_data.csv"
+        f_name = "external_data.csv"
 
     file_path = Path(__file__).parent / "data" / f_name
     df_ext = pd.read_csv(file_path, parse_dates=["date"])
