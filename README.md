@@ -41,11 +41,11 @@ We worked with the following algorithms. Tuning was done by using an 8-fold cros
 
 ## Results
 
-Due to readability, we display only the best performing models compared to a baseline in the following graph. All of the final models are tuned and the Voting Regressor is the weighted average of the the Catboost, LightGBM and XGB model.
+Due to readability, we display only the best performing models compared to a baseline in the following graph. All of the final models are tuned and the Voting Regressor is the weighted average of the Catboost (with the lowest test RMSE), LightGBM and XGB model. The best model is not inluded in the Voting Regressor, since the Stacked Generalization did not seem to improve performance while also being more computationally expensive.
 
 ![Alt text](modeling/scores_comparison.png?raw=true "Title")
 
-Below you can find the output for the tuned Catboost model. It seems to be the best performing algorithm for this project. The model had the lowest RMSE in GridSearchCV compared to all trained models. The mean validation score in GridSearchCV was 0.73. For the ramp-test, the bagged validation score was 0.735 and the bagged test score was 0.539. 
+Below you can find the output for the tuned Catboost model with parts of all external data sources. It seems to be the best performing algorithm for this project. The mean validation score in GridSearchCV was 0.73. For the ramp-test, the bagged validation score was 0.73 and the bagged test score was 0.55. 
 
 <details>
 
@@ -55,60 +55,60 @@ Below you can find the output for the tuned Catboost model. It seems to be the b
 Testing Bike count prediction
 Reading train and test files from ./data/ ...
 Reading cv ...
-Training submissions/221129_lowest_test ...
+Training submissions/221129_test_new_data_5 ...
 CV fold 0
         score   rmse      time
-        train  0.289  8.144703
-        valid  0.885  1.524310
-        test   0.628  0.274136
+        train  0.280  7.585205
+        valid  0.878  1.508493
+        test   0.622  0.268115
 CV fold 1
         score   rmse      time
-        train  0.327  9.824058
-        valid  0.738  1.383957
-        test   0.583  0.259836
+        train  0.317  9.535046
+        valid  0.705  1.507614
+        test   0.583  0.272807
 CV fold 2
         score   rmse       time
-        train  0.340  12.709411
-        valid  0.673   1.366187
-        test   0.541   0.261274
+        train  0.332  12.457529
+        valid  0.709   1.348956
+        test   0.563   0.254016
 CV fold 3
         score   rmse       time
-        train  0.363  16.143719
-        valid  0.558   1.357172
-        test   0.663   0.261925
+        train  0.353  16.361878
+        valid  0.551   1.354251
+        test   0.664   0.256776
 CV fold 4
         score   rmse       time
-        train  0.371  25.455985
-        valid  0.694   1.707904
-        test   0.611   0.316238
+        train  0.360  20.626009
+        valid  0.695   1.330484
+        test   0.618   0.262307
 CV fold 5
         score   rmse       time
-        train  0.381  23.015316
-        valid  0.710   1.304126
-        test   0.625   0.258692
+        train  0.368  23.560019
+        valid  0.706   1.364733
+        test   0.615   0.262338
 CV fold 6
         score   rmse       time
-        train  0.387  28.040693
-        valid  0.852   1.358390
-        test   0.603   0.257964
+        train  0.374  29.812642
+        valid  0.872   1.364596
+        test   0.606   0.264050
 CV fold 7
         score   rmse       time
-        train  0.386  31.464994
-        valid  0.723   1.352725
-        test   0.746   0.267434
+        train  0.374  28.971641
+        valid  0.684   1.429442
+        test   0.721   0.258017
 ----------------------------
 Mean CV scores
 ----------------------------
         score            rmse         time
-        train  0.355 ± 0.0323  19.3 ± 8.24
-        valid  0.729 ± 0.0958   1.4 ± 0.12
-        test   0.625 ± 0.0565   0.3 ± 0.02
+        train  0.345 ± 0.0309  18.6 ± 7.97
+        valid  0.725 ± 0.0993   1.4 ± 0.07
+        test    0.624 ± 0.046   0.3 ± 0.01
 ----------------------------
 Bagged scores
 ----------------------------
         score   rmse
-        valid  0.735
-        test   0.539
+        valid  0.732
+        test   0.551
 ```
 
 </details>
